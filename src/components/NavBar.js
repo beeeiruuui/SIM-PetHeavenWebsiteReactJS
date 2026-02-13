@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, user, logout, isAdmin } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -38,6 +38,9 @@ const NavBar = () => {
             <Link to="/fundog" onClick={closeMenu}>Dogs</Link>
             <Link to="/adopt" onClick={closeMenu}>Adopt</Link>
             <Link to="/release" onClick={closeMenu}>Release</Link>
+            {isLoggedIn && isAdmin() && (
+              <Link to="/admin" onClick={closeMenu} className="admin-link">Admin</Link>
+            )}
           </div>
           <div className="nav-actions">
             {isLoggedIn ? (
@@ -50,7 +53,7 @@ const NavBar = () => {
                 </button>
               </>
             ) : (
-              <Link to="/profile" className="btn btn-nav" onClick={closeMenu}>
+              <Link to="/auth" className="btn btn-nav" onClick={closeMenu}>
                 Sign In
               </Link>
             )}

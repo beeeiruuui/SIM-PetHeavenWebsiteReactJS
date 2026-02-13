@@ -7,6 +7,8 @@ import Home from "./components/Home";
 import Profile from "./components/Profile";
 import AdoptionForm from "./components/AdoptionForm";
 import ReleaseForm from "./components/ReleaseForm";
+import Auth from "./components/Auth";
+import AdminDashboard from "./components/AdminDashboard";
 import { AuthProvider } from "./context/AuthContext";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -27,6 +29,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/adopt" element={<AdoptionForm />} />
             <Route path="/release" element={<ReleaseForm />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </div>
         
