@@ -14,7 +14,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
   return (
     <>
-      <Router basename="/SIM-PetHeavenWebsiteReactJS/">
+      <Router basename="/SIM-PetHeavenWebsiteReactJS">
         <AuthProvider>
         <NavBar />
 
