@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/SIM-PetHeavenWebsiteReactJS/static/css/main.aadf7ce9.css",
+    "main.js": "/SIM-PetHeavenWebsiteReactJS/static/js/main.aae1faff.js",
+    "static/js/453.6a7f897e.chunk.js": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js",
+    "index.html": "/SIM-PetHeavenWebsiteReactJS/index.html",
+    "main.aadf7ce9.css.map": "/SIM-PetHeavenWebsiteReactJS/static/css/main.aadf7ce9.css.map",
+    "main.aae1faff.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/main.aae1faff.js.map",
+    "453.6a7f897e.chunk.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.aadf7ce9.css",
+    "static/js/main.aae1faff.js"
+  ]
+}
