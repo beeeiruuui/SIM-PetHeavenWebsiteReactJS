@@ -27,6 +27,13 @@ const Auth = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
+    
+    // Validate admin email domain
+    if (activeTab === 'admin' && !formData.email.endsWith('@petheaven.mymail.sg')) {
+      setMessage({ text: 'Admin accounts must use @petheaven.mymail.sg email domain.', type: 'error' });
+      return;
+    }
+    
     const result = login(formData.email, formData.password, activeTab);
     
     if (result.success) {
@@ -53,6 +60,12 @@ const Auth = () => {
 
     if (formData.password.length < 6) {
       setMessage({ text: 'Password must be at least 6 characters.', type: 'error' });
+      return;
+    }
+
+    // Validate admin email domain
+    if (activeTab === 'admin' && !formData.email.endsWith('@petheaven.mymail.sg')) {
+      setMessage({ text: 'Admin accounts must use @petheaven.mymail.sg email domain.', type: 'error' });
       return;
     }
 
@@ -150,9 +163,11 @@ const Auth = () => {
             {isRegistering ? 'Registration' : 'Sign In'}
           </h2>
           
-          {activeTab === 'admin' && !isRegistering && (
+          {activeTab === 'admin' && (
             <p className="auth-hint">
-              Demo credentials: admin@petheaven.org.sg / admin123
+              {isRegistering 
+                ? 'Admin accounts must use @petheaven.mymail.sg email domain.'
+                : 'Demo credentials: admin@petheaven.mymail.sg / admin123'}
             </p>
           )}
 
