@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 const Auth = () => {
   const { isLoggedIn, user, login, register, logout, isAdmin } = useAuth();
@@ -37,14 +37,11 @@ const Auth = () => {
     const result = login(formData.email, formData.password, activeTab);
     
     if (result.success) {
-      setMessage({ text: result.message, type: 'success' });
-      setTimeout(() => {
-        if (activeTab === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/profile');
-        }
-      }, 1000);
+      if (activeTab === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/profile');
+      }
     } else {
       setMessage({ text: result.message, type: 'error' });
     }
@@ -78,14 +75,11 @@ const Auth = () => {
     }, activeTab);
 
     if (result.success) {
-      setMessage({ text: result.message, type: 'success' });
-      setTimeout(() => {
-        if (activeTab === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/profile');
-        }
-      }, 1000);
+      if (activeTab === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/profile');
+      }
     } else {
       setMessage({ text: result.message, type: 'error' });
     }
@@ -104,37 +98,13 @@ const Auth = () => {
     setFormData({ email: '', password: '', confirmPassword: '', name: '', phone: '', address: '' });
   };
 
-  // If user is logged in, show appropriate message
+  // If user is logged in, redirect to appropriate page
   if (isLoggedIn && user) {
-    return (
-      <div className="auth-container">
-        <div className="auth-box">
-          <div className="auth-logged-in">
-            <div className="user-avatar">
-              {isAdmin() ? '👨‍💼' : '👤'}
-            </div>
-            <h2>Welcome, {user.name}!</h2>
-            <p className="user-role">
-              Logged in as: <span className={`role-badge ${user.role}`}>{user.role}</span>
-            </p>
-            <div className="auth-actions">
-              {isAdmin() ? (
-                <button className="btn btn-primary" onClick={() => navigate('/admin')}>
-                  Go to Admin Dashboard
-                </button>
-              ) : (
-                <button className="btn btn-primary" onClick={() => navigate('/profile')}>
-                  Go to Profile
-                </button>
-              )}
-              <button className="btn btn-secondary" onClick={handleLogout}>
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    if (isAdmin()) {
+      return <Navigate to="/admin" replace />;
+    } else {
+      return <Navigate to="/profile" replace />;
+    }
   }
 
   return (

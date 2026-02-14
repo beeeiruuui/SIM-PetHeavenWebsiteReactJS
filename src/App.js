@@ -60,7 +60,7 @@ function App() {
             <div className="footer-section">
               <h4>Contact</h4>
               <p>📍 123 Pet Haven Road, Singapore</p>
-              <p>📞 +65 6123 4567</p>
+              <p>📞 +65 8682 8785</p>
               <p>📧 info@petheaven.org.sg</p>
             </div>
           </div>

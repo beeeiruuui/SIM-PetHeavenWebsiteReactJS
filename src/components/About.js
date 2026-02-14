@@ -123,7 +123,7 @@ const About = () => {
           </div>
           <div className="contact-item">
             <span>📞</span>
-            <p><strong>Phone:</strong><br />+65 6123 4567</p>
+            <p><strong>Phone:</strong><br />+65 8682 8785</p>
           </div>
           <div className="contact-item">
             <span>📧</span>
