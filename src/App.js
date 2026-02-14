@@ -9,7 +9,7 @@ import AdoptionForm from "./components/AdoptionForm";
 import ReleaseForm from "./components/ReleaseForm";
 import Auth from "./components/Auth";
 import AdminDashboard from "./components/AdminDashboard";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./services/unified-auth";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 

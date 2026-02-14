@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../services/unified-auth';
 import { useNavigate, Navigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
