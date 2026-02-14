@@ -59,7 +59,7 @@ function App() {
             </div>
             <div className="footer-section">
               <h4>Contact</h4>
-              <p>📍 123 Pet Haven Road, Singapore</p>
+              <p>📍 Storhub, 615 Lorong 4 Toa Payoh, Singapore</p>
               <p>📞 +65 8682 8785</p>
               <p>📧 info@petheaven.org.sg</p>
             </div>

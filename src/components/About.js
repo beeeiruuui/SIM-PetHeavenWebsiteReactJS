@@ -119,7 +119,7 @@ const About = () => {
         <div className="contact-info">
           <div className="contact-item">
             <span>📍</span>
-            <p><strong>Address:</strong><br />123 Pet Haven Road, Singapore 123456</p>
+            <p><strong>Address:</strong><br />Storhub, 615 Lorong 4 Toa Payoh, Singapore</p>
           </div>
           <div className="contact-item">
             <span>📞</span>
