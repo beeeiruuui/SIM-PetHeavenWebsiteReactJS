@@ -162,14 +162,6 @@ const Auth = () => {
             {activeTab === 'admin' ? 'Admin ' : ''}
             {isRegistering ? 'Registration' : 'Sign In'}
           </h2>
-          
-          {activeTab === 'admin' && (
-            <p className="auth-hint">
-              {isRegistering 
-                ? 'Admin accounts must use @petheaven.mymail.sg email domain.'
-                : 'Demo credentials: admin@petheaven.mymail.sg / admin123'}
-            </p>
-          )}
 
           <form onSubmit={isRegistering ? handleRegister : handleLogin}>
             {isRegistering && (
@@ -195,9 +187,12 @@ const Auth = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email"
+                placeholder={activeTab === 'admin' ? 'your@petheaven.mymail.sg' : 'Enter your email'}
                 required
               />
+              {activeTab === 'admin' && (
+                <span className="field-hint">Must use @petheaven.mymail.sg</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -212,6 +207,18 @@ const Auth = () => {
                 required
               />
             </div>
+
+            {!isRegistering && (
+              <div className="auth-options">
+                <label className="remember-me">
+                  <input type="checkbox" name="rememberMe" />
+                  Remember me
+                </label>
+                <button type="button" className="link-btn forgot-password">
+                  Forgot password?
+                </button>
+              </div>
+            )}
 
             {isRegistering && (
               <>

@@ -1784,6 +1784,48 @@ legend {
   border-radius: 8px;
 }
 
+.field-hint {
+  display: block;
+  color: var(--primary-pink);
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+  font-weight: 500;
+}
+
+.auth-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0 1rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-medium);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-pink);
+  cursor: pointer;
+}
+
+.forgot-password {
+  color: var(--primary-pink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.forgot-password:hover {
+  color: var(--text-dark);
+  text-decoration: underline;
+}
+
 .auth-content form {
   display: flex;
   flex-direction: column;
