@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/SIM-PetHeavenWebsiteReactJS/static/css/main.af177685.css",
-    "main.js": "/SIM-PetHeavenWebsiteReactJS/static/js/main.abd08140.js",
+    "main.css": "/SIM-PetHeavenWebsiteReactJS/static/css/main.bb114fff.css",
+    "main.js": "/SIM-PetHeavenWebsiteReactJS/static/js/main.28df788b.js",
     "static/js/453.6a7f897e.chunk.js": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js",
     "static/media/hero-background.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/hero-background.64fe8a7ce338ca908421.jpg",
     "index.html": "/SIM-PetHeavenWebsiteReactJS/index.html",
-    "main.af177685.css.map": "/SIM-PetHeavenWebsiteReactJS/static/css/main.af177685.css.map",
-    "main.abd08140.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/main.abd08140.js.map",
+    "main.bb114fff.css.map": "/SIM-PetHeavenWebsiteReactJS/static/css/main.bb114fff.css.map",
+    "main.28df788b.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/main.28df788b.js.map",
     "453.6a7f897e.chunk.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.af177685.css",
-    "static/js/main.abd08140.js"
+    "static/css/main.bb114fff.css",
+    "static/js/main.28df788b.js"
   ]
 }
