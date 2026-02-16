@@ -25,6 +25,7 @@ const AdoptionForm = () => {
 
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showEmailWarning, setShowEmailWarning] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -78,8 +79,14 @@ const AdoptionForm = () => {
       sendAdoptionEmail(formData);
       
       console.log('Adoption form submitted:', formData);
-      setSubmitted(true);
+      // Show email warning modal instead of directly completing
+      setShowEmailWarning(true);
     }
+  };
+
+  const handleEmailSent = () => {
+    setShowEmailWarning(false);
+    setSubmitted(true);
   };
 
   // Require login to submit adoption form
@@ -94,6 +101,35 @@ const AdoptionForm = () => {
           <div className="login-actions">
             <Link to="/profile" className="btn btn-primary">Become a Member</Link>
             <Link to="/" className="btn btn-secondary">Return to Home</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (showEmailWarning) {
+    return (
+      <div className="form-container">
+        <div className="warning-modal-overlay">
+          <div className="warning-modal">
+            <span className="warning-icon">⚠️</span>
+            <h2>Important: Email Required!</h2>
+            <div className="warning-content">
+              <p><strong>Your email client should have opened with the adoption request.</strong></p>
+              <p className="warning-alert">🚨 If you do not send the email to our administrator, your adoption request <strong>will NOT be approved</strong>.</p>
+              <p>Please ensure you have:</p>
+              <ul>
+                <li>✉️ Sent the email from your email client</li>
+                <li>📧 Verified the recipient is correct</li>
+                <li>📝 Included all the form information</li>
+              </ul>
+              <p className="warning-note">Only click "I Have Sent the Email" after you have successfully sent the email.</p>
+            </div>
+            <div className="warning-actions">
+              <button className="btn btn-primary" onClick={handleEmailSent}>
+                ✅ I Have Sent the Email - Proceed
+              </button>
+            </div>
           </div>
         </div>
       </div>

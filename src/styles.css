@@ -1504,6 +1504,111 @@ legend {
   margin-bottom: 0.5rem;
 }
 
+/* =============== EMAIL WARNING MODAL =============== */
+.warning-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(92, 77, 125, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.warning-modal {
+  background: linear-gradient(135deg, #fff5f5 0%, #fff0f3 100%);
+  border-radius: var(--border-radius-lg);
+  padding: 2.5rem;
+  max-width: 550px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+  border: 3px solid #ffccd5;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.warning-modal .warning-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.warning-modal h2 {
+  color: #c62828;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.warning-content {
+  text-align: left;
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+  border: 2px solid #ffccd5;
+}
+
+.warning-content p {
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.warning-content .warning-alert {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  padding: 1rem;
+  border-radius: 15px;
+  border-left: 4px solid #f44336;
+  font-size: 1rem;
+}
+
+.warning-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.warning-content ul li {
+  padding: 0.5rem 0;
+  color: var(--text-medium);
+  font-size: 0.95rem;
+}
+
+.warning-content .warning-note {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.warning-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.warning-actions .btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
 /* =============== PROFILE PAGE =============== */
 .profile-container {
   max-width: 700px;
