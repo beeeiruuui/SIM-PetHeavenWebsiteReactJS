@@ -39,7 +39,7 @@ const NavBar = () => {
             <Link to="/adopt" onClick={closeMenu}>Adopt</Link>
             <Link to="/release" onClick={closeMenu}>Release</Link>
             {isLoggedIn && isAdmin() && (
-              <Link to="/admin" onClick={closeMenu} className="admin-link">Admin</Link>
+              <Link to="/admin" onClick={closeMenu} className="admin-link">Admin Dashboard</Link>
             )}
           </div>
           <div className="nav-actions">

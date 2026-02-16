@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getDogs as fetchDogs, getCustomDogs } from '../services/dogs-data';
 
 const Dogs = () => {
   const [dogs, setDogs] = useState([]);
@@ -7,130 +8,61 @@ const Dogs = () => {
   const [selectedDog, setSelectedDog] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSize, setFilterSize] = useState('all');
+  const [filterGender, setFilterGender] = useState('all');
+  const [filterAge, setFilterAge] = useState(15); // Max age in years
 
-  // Sample dog data - in a real app, this would come from an API
-  const sampleDogs = [
-    {
-      id: 1,
-      name: 'Buddy',
-      breed: 'Golden Retriever',
-      age: '3 years',
-      gender: 'Male',
-      size: 'Large',
-      color: 'Golden',
-      personality: 'Friendly and loyal, great with families and children',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placedog.net/300/300?id=1'
-    },
-    {
-      id: 2,
-      name: 'Bella',
-      breed: 'Labrador Retriever',
-      age: '2 years',
-      gender: 'Female',
-      size: 'Large',
-      color: 'Chocolate',
-      personality: 'Energetic and playful, loves outdoor activities',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placedog.net/301/300?id=2'
-    },
-    {
-      id: 3,
-      name: 'Max',
-      breed: 'German Shepherd',
-      age: '4 years',
-      gender: 'Male',
-      size: 'Large',
-      color: 'Black and Tan',
-      personality: 'Intelligent and protective, excellent guard dog',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placedog.net/302/300?id=3'
-    },
-    {
-      id: 4,
-      name: 'Coco',
-      breed: 'Poodle',
-      age: '1 year',
-      gender: 'Female',
-      size: 'Medium',
-      color: 'White',
-      personality: 'Smart and elegant, hypoallergenic coat',
-      vaccinated: true,
-      neutered: false,
-      image: 'https://placedog.net/303/300?id=4'
-    },
-    {
-      id: 5,
-      name: 'Rocky',
-      breed: 'Bulldog',
-      age: '5 years',
-      gender: 'Male',
-      size: 'Medium',
-      color: 'Brindle',
-      personality: 'Calm and courageous, good for apartment living',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placedog.net/304/300?id=5'
-    },
-    {
-      id: 6,
-      name: 'Daisy',
-      breed: 'Shih Tzu',
-      age: '2 years',
-      gender: 'Female',
-      size: 'Small',
-      color: 'Brown and White',
-      personality: 'Affectionate lap dog, great companion',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placedog.net/305/300?id=6'
-    },
-    {
-      id: 7,
-      name: 'Charlie',
-      breed: 'Beagle',
-      age: '3 years',
-      gender: 'Male',
-      size: 'Medium',
-      color: 'Tricolor',
-      personality: 'Curious and merry, loves to explore',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placedog.net/306/300?id=7'
-    },
-    {
-      id: 8,
-      name: 'Milo',
-      breed: 'Corgi',
-      age: '1 year',
-      gender: 'Male',
-      size: 'Small',
-      color: 'Red and White',
-      personality: 'Playful and outgoing, loves attention',
-      vaccinated: true,
-      neutered: false,
-      image: 'https://placedog.net/307/300?id=8'
-    }
-  ];
+  // Load dogs from dogs-data.js and listen for changes
+  const loadDogs = () => {
+    setDogs([...fetchDogs(), ...getCustomDogs()]);
+    setLoading(false);
+  };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setDogs(sampleDogs);
-      setLoading(false);
-    }, 500);
+    loadDogs();
+    
+    // Listen for pet status changes (real-time updates)
+    const handlePetChange = () => loadDogs();
+    window.addEventListener('petStatusChanged', handlePetChange);
+    window.addEventListener('petDataChanged', handlePetChange);
+    window.addEventListener('storage', handlePetChange);
+    
+    return () => {
+      window.removeEventListener('petStatusChanged', handlePetChange);
+      window.removeEventListener('petDataChanged', handlePetChange);
+      window.removeEventListener('storage', handlePetChange);
+    };
   }, []);
 
+  // Helper to parse age string to number
+  const parseAge = (ageStr) => {
+    if (!ageStr) return 0;
+    const match = ageStr.match(/(\d+)/);
+    if (!match) return 0;
+    const num = parseInt(match[1]);
+    if (ageStr.toLowerCase().includes('month')) return num / 12;
+    return num;
+  };
+
   const filteredDogs = dogs.filter(dog => {
-    const matchesSearch = dog.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         dog.breed.toLowerCase().includes(searchTerm.toLowerCase());
+    // Only show available dogs
+    if (dog.status !== 'Available') return false;
     
-    if (filterSize === 'all') return matchesSearch;
-    return matchesSearch && dog.size.toLowerCase() === filterSize.toLowerCase();
+    const dogName = dog.name || '';
+    const dogBreed = dog.breed || '';
+    const matchesSearch = dogName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         dogBreed.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Size filter
+    const matchesSize = filterSize === 'all' || (dog.size && dog.size.toLowerCase() === filterSize.toLowerCase());
+    
+    // Gender filter
+    const matchesGender = filterGender === 'all' || (dog.gender && dog.gender.toLowerCase() === filterGender.toLowerCase());
+    
+    // Age filter (slider)
+    const dogAge = parseAge(dog.age);
+    const matchesAge = dogAge <= filterAge;
+    
+    return matchesSearch && matchesSize && matchesGender && matchesAge;
   });
 
   const openModal = (dog) => {
@@ -168,6 +100,15 @@ const Dogs = () => {
           className="search-input"
         />
         <select 
+          value={filterGender} 
+          onChange={(e) => setFilterGender(e.target.value)}
+          className="filter-select"
+        >
+          <option value="all">All Genders</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <select 
           value={filterSize} 
           onChange={(e) => setFilterSize(e.target.value)}
           className="filter-select"
@@ -177,6 +118,27 @@ const Dogs = () => {
           <option value="medium">Medium</option>
           <option value="large">Large</option>
         </select>
+      </div>
+      
+      {/* Age Range Slider */}
+      <div className="age-slider-container">
+        <label className="age-slider-label">
+          Max Age: <span className="age-value">{filterAge} {filterAge === 1 ? 'year' : 'years'}</span>
+        </label>
+        <input
+          type="range"
+          min="1"
+          max="15"
+          value={filterAge}
+          onChange={(e) => setFilterAge(parseInt(e.target.value))}
+          className="age-slider"
+        />
+        <div className="age-slider-labels">
+          <span>1 yr</span>
+          <span>5 yrs</span>
+          <span>10 yrs</span>
+          <span>15 yrs</span>
+        </div>
       </div>
 
       {/* Results count */}
@@ -189,19 +151,19 @@ const Dogs = () => {
         {filteredDogs.map(dog => (
           <div key={dog.id} className="pet-card">
             <div className="pet-image">
-              <img src={dog.image} alt={dog.name} />
+              <img src={dog.image} alt={dog.name || 'Dog'} />
               {dog.vaccinated && <span className="badge vaccinated">Vaccinated</span>}
-              <span className={`badge size-${dog.size.toLowerCase()}`}>{dog.size}</span>
+              {dog.size && <span className={`badge size-${dog.size.toLowerCase()}`}>{dog.size}</span>}
             </div>
             <div className="pet-info">
-              <h3>{dog.name}</h3>
-              <p className="pet-breed">{dog.breed}</p>
+              <h3>{dog.name || 'Unknown'}</h3>
+              <p className="pet-breed">{dog.breed || 'Mixed'}</p>
               <div className="pet-details">
-                <span>{dog.age}</span>
-                <span>{dog.gender}</span>
-                <span>{dog.color}</span>
+                <span>{dog.age || 'Unknown'}</span>
+                <span>{dog.gender || 'Unknown'}</span>
+                <span>{dog.color || ''}</span>
               </div>
-              <p className="pet-personality">{dog.personality}</p>
+              <p className="pet-personality">{dog.personality || ''}</p>
               <div className="pet-actions">
                 <button className="btn btn-outline" onClick={() => openModal(dog)}>
                   View Details

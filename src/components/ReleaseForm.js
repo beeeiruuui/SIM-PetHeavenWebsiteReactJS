@@ -1,24 +1,34 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../services/unified-auth';
+import { sendReleaseEmail } from '../services/email-service';
 
 const ReleaseForm = () => {
+  const { user, isLoggedIn } = useAuth();
+  const location = useLocation();
+  const petToRelease = location.state?.petToRelease || null;
+  
   const [formData, setFormData] = useState({
-    ownerName: '',
-    email: '',
-    phone: '',
-    address: '',
-    petName: '',
-    petType: 'cat',
-    petBreed: '',
-    petAge: '',
-    petGender: 'male',
-    isVaccinated: 'yes',
-    isNeutered: 'no',
+    ownerName: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
+    petName: petToRelease?.name || '',
+    petType: petToRelease?.type?.toLowerCase() || 'cat',
+    petBreed: petToRelease?.breed || '',
+    petAge: petToRelease?.age || '',
+    petGender: petToRelease?.gender?.toLowerCase() || 'male',
+    isVaccinated: petToRelease?.vaccinated || 'yes',
+    isNeutered: petToRelease?.neutered || 'no',
     healthCondition: '',
-    personality: '',
+    personality: petToRelease?.personality || '',
     reason: '',
     urgency: 'normal',
     agreeTerms: false
   });
+
+  // Check if releasing an adopted pet (has fixed info that shouldn't change)
+  const isReleasingAdoptedPet = !!petToRelease;
 
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
@@ -57,10 +67,44 @@ const ReleaseForm = () => {
     e.preventDefault();
     
     if (validateForm()) {
+      // Save to localStorage for history tracking
+      const releaseRequest = {
+        id: Date.now(),
+        ...formData,
+        status: 'Pending',
+        submittedDate: new Date().toISOString(),
+        type: 'release'
+      };
+      
+      const existingRequests = JSON.parse(localStorage.getItem('releaseRequests') || '[]');
+      existingRequests.push(releaseRequest);
+      localStorage.setItem('releaseRequests', JSON.stringify(existingRequests));
+      
+      // Open email client to send to admin
+      sendReleaseEmail(formData);
+      
       console.log('Release form submitted:', formData);
       setSubmitted(true);
     }
   };
+
+  // Require login to submit release form
+  if (!isLoggedIn) {
+    return (
+      <div className="form-container">
+        <div className="login-required-message">
+          <span className="login-icon">🔐</span>
+          <h2>Membership Required</h2>
+          <p>Please become a member to submit a release request.</p>
+          <p className="login-note">This helps us process your request and keep you updated on your pet's status.</p>
+          <div className="login-actions">
+            <Link to="/profile" className="btn btn-primary">Become a Member</Link>
+            <Link to="/" className="btn btn-secondary">Return to Home</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -75,7 +119,7 @@ const ReleaseForm = () => {
             <p><strong>Reference Email:</strong> {formData.email}</p>
             <p><strong>Submitted:</strong> {new Date().toLocaleDateString()}</p>
           </div>
-          <a href="/" className="btn btn-primary">Return to Home</a>
+          <Link to="/" className="btn btn-primary">Return to Home</Link>
         </div>
       </div>
     );
@@ -94,65 +138,75 @@ const ReleaseForm = () => {
           <legend>Owner Information</legend>
           
           <div className="form-group">
-            <label htmlFor="ownerName">Full Name *</label>
+            <label htmlFor="ownerName">Full Name * (from your account)</label>
             <input
               type="text"
               id="ownerName"
               name="ownerName"
               value={formData.ownerName}
-              onChange={handleChange}
-              placeholder="Enter your full name"
+              readOnly
+              className="readonly-field"
             />
             {errors.ownerName && <span className="error">{errors.ownerName}</span>}
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="email">Email *</label>
+              <label htmlFor="email">Email * (from your account)</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
-                placeholder="your.email@example.com"
+                readOnly
+                className="readonly-field"
               />
               {errors.email && <span className="error">{errors.email}</span>}
             </div>
 
             <div className="form-group">
-              <label htmlFor="phone">Phone Number *</label>
+              <label htmlFor="phone">Phone Number * (from your account)</label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
-                onChange={handleChange}
-                placeholder="e.g., 9123-4567"
+                readOnly
+                className="readonly-field"
               />
               {errors.phone && <span className="error">{errors.phone}</span>}
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="address">Address</label>
+            <label htmlFor="address">Address (from your account)</label>
             <textarea
               id="address"
               name="address"
               value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter your address"
+              readOnly
+              className="readonly-field"
               rows="2"
             />
           </div>
+          
+          <p className="form-note">📝 Need to update your info? <Link to="/profile">Edit your profile</Link> first.</p>
         </fieldset>
 
         <fieldset>
           <legend>Pet Information</legend>
 
+          {petToRelease && (
+            <div className="prefilled-note">
+              📋 Releasing your adopted pet: <strong>{petToRelease.name}</strong>
+              <br />
+              <small>Basic info (name, type, breed, gender) is pre-filled. Please update age, health status, and personality if changed.</small>
+            </div>
+          )}
+
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="petName">Pet Name *</label>
+              <label htmlFor="petName">Pet Name *{petToRelease ? ' (from your adoption)' : ''}</label>
               <input
                 type="text"
                 id="petName"
@@ -160,17 +214,21 @@ const ReleaseForm = () => {
                 value={formData.petName}
                 onChange={handleChange}
                 placeholder="Your pet's name"
+                readOnly={!!petToRelease}
+                className={petToRelease ? 'readonly-field' : ''}
               />
               {errors.petName && <span className="error">{errors.petName}</span>}
             </div>
 
             <div className="form-group">
-              <label htmlFor="petType">Pet Type *</label>
+              <label htmlFor="petType">Pet Type *{petToRelease ? ' (from your adoption)' : ''}</label>
               <select
                 id="petType"
                 name="petType"
                 value={formData.petType}
                 onChange={handleChange}
+                disabled={!!petToRelease}
+                className={petToRelease ? 'readonly-field' : ''}
               >
                 <option value="cat">Cat</option>
                 <option value="dog">Dog</option>
@@ -180,7 +238,7 @@ const ReleaseForm = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="petBreed">Breed</label>
+              <label htmlFor="petBreed">Breed{isReleasingAdoptedPet ? ' (from adoption record)' : ''}</label>
               <input
                 type="text"
                 id="petBreed"
@@ -188,11 +246,13 @@ const ReleaseForm = () => {
                 value={formData.petBreed}
                 onChange={handleChange}
                 placeholder="e.g., Persian, Golden Retriever"
+                readOnly={isReleasingAdoptedPet && formData.petBreed}
+                className={isReleasingAdoptedPet && formData.petBreed ? 'readonly-field' : ''}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="petAge">Age *</label>
+              <label htmlFor="petAge">Age * (update if changed)</label>
               <input
                 type="text"
                 id="petAge"
@@ -205,12 +265,14 @@ const ReleaseForm = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="petGender">Gender</label>
+              <label htmlFor="petGender">Gender{isReleasingAdoptedPet ? ' (from adoption record)' : ''}</label>
               <select
                 id="petGender"
                 name="petGender"
                 value={formData.petGender}
                 onChange={handleChange}
+                disabled={isReleasingAdoptedPet}
+                className={isReleasingAdoptedPet ? 'readonly-field' : ''}
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -220,7 +282,7 @@ const ReleaseForm = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="isVaccinated">Vaccinated?</label>
+              <label htmlFor="isVaccinated">Vaccinated?{isReleasingAdoptedPet ? ' (update if changed)' : ''}</label>
               <select
                 id="isVaccinated"
                 name="isVaccinated"
@@ -234,7 +296,7 @@ const ReleaseForm = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="isNeutered">Neutered/Spayed?</label>
+              <label htmlFor="isNeutered">Neutered/Spayed?{isReleasingAdoptedPet ? ' (update if changed)' : ''}</label>
               <select
                 id="isNeutered"
                 name="isNeutered"
@@ -248,7 +310,7 @@ const ReleaseForm = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="healthCondition">Health Condition</label>
+            <label htmlFor="healthCondition">Health Condition *{isReleasingAdoptedPet ? ' (current status)' : ''}</label>
             <textarea
               id="healthCondition"
               name="healthCondition"
@@ -260,7 +322,7 @@ const ReleaseForm = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="personality">Personality & Behavior</label>
+            <label htmlFor="personality">Personality & Behavior{isReleasingAdoptedPet ? ' (update with current observations)' : ''}</label>
             <textarea
               id="personality"
               name="personality"

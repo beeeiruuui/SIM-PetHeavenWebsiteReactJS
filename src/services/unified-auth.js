@@ -6,16 +6,10 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-// Simulated user database (in real app, this would be backend API)
-const DEMO_USERS = [
-  { email: 'admin@petheaven.org.sg', password: 'admin123', name: 'Admin', role: 'admin' },
-  { email: 'user@example.com', password: 'user123', name: 'John Doe', role: 'user' }
-];
-
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState(DEMO_USERS);
+  const [users, setUsers] = useState([]);
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -56,6 +50,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const newUser = {
+      id: Date.now(),
       ...userData,
       role,
       memberSince: new Date().getFullYear().toString()
@@ -75,6 +70,39 @@ export const AuthProvider = ({ children }) => {
     return user?.role === 'admin';
   };
 
+  const updateProfile = (updatedData) => {
+    if (!user) return { success: false, message: 'Not logged in.' };
+    
+    const updatedUser = {
+      ...user,
+      name: updatedData.name || user.name,
+      phone: updatedData.phone || user.phone,
+      address: updatedData.address || user.address
+    };
+    
+    setUser(updatedUser);
+    localStorage.setItem('petHeaven_user', JSON.stringify(updatedUser));
+    
+    // Also update in users list
+    setUsers(prev => prev.map(u => 
+      u.email === user.email ? { ...u, ...updatedData } : u
+    ));
+    
+    return { success: true, message: 'Profile updated successfully!' };
+  };
+
+  const deleteAccount = (email) => {
+    // Remove user from users list
+    setUsers(prev => prev.filter(u => u.email !== email));
+    
+    // Log out if deleting own account
+    if (user && user.email === email) {
+      logout();
+    }
+    
+    return { success: true, message: 'Account deleted successfully.' };
+  };
+
   const value = {
     isLoggedIn,
     user,
@@ -82,6 +110,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     register,
     isAdmin,
+    updateProfile,
+    deleteAccount,
     users // For admin dashboard to view users
   };
 

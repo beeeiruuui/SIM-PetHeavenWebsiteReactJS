@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../services/unified-auth';
+import { sendAdoptionEmail } from '../services/email-service';
 
 const AdoptionForm = () => {
+  const { user, isLoggedIn } = useAuth();
   const location = useLocation();
   const petFromState = location.state?.pet || null;
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
     petName: petFromState?.name || '',
     petType: petFromState?.type || '',
     reason: '',
@@ -58,11 +61,44 @@ const AdoptionForm = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      // In a real app, this would send to a backend API
+      // Save to localStorage for history tracking
+      const adoptionRequest = {
+        id: Date.now(),
+        ...formData,
+        status: 'Pending',
+        submittedDate: new Date().toISOString(),
+        type: 'adoption'
+      };
+      
+      const existingRequests = JSON.parse(localStorage.getItem('adoptionRequests') || '[]');
+      existingRequests.push(adoptionRequest);
+      localStorage.setItem('adoptionRequests', JSON.stringify(existingRequests));
+      
+      // Open email client to send to admin
+      sendAdoptionEmail(formData);
+      
       console.log('Adoption form submitted:', formData);
       setSubmitted(true);
     }
   };
+
+  // Require login to submit adoption form
+  if (!isLoggedIn) {
+    return (
+      <div className="form-container">
+        <div className="login-required-message">
+          <span className="login-icon">🔐</span>
+          <h2>Membership Required</h2>
+          <p>Please become a member to submit an adoption request.</p>
+          <p className="login-note">This helps us process your application and keep you updated on your request status.</p>
+          <div className="login-actions">
+            <Link to="/profile" className="btn btn-primary">Become a Member</Link>
+            <Link to="/" className="btn btn-secondary">Return to Home</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -76,7 +112,7 @@ const AdoptionForm = () => {
             <p><strong>Reference Email:</strong> {formData.email}</p>
             <p><strong>Submitted:</strong> {new Date().toLocaleDateString()}</p>
           </div>
-          <a href="/" className="btn btn-primary">Return to Home</a>
+          <Link to="/" className="btn btn-primary">Return to Home</Link>
         </div>
       </div>
     );
@@ -94,58 +130,60 @@ const AdoptionForm = () => {
           <legend>Your Information</legend>
           
           <div className="form-group">
-            <label htmlFor="name">Full Name *</label>
+            <label htmlFor="name">Full Name * (from your account)</label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
+              readOnly
+              className="readonly-field"
             />
             {errors.name && <span className="error">{errors.name}</span>}
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="email">Email *</label>
+              <label htmlFor="email">Email * (from your account)</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
-                placeholder="your.email@example.com"
+                readOnly
+                className="readonly-field"
               />
               {errors.email && <span className="error">{errors.email}</span>}
             </div>
 
             <div className="form-group">
-              <label htmlFor="phone">Phone Number *</label>
+              <label htmlFor="phone">Phone Number * (from your account)</label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
-                onChange={handleChange}
-                placeholder="e.g., 9123-4567"
+                readOnly
+                className="readonly-field"
               />
               {errors.phone && <span className="error">{errors.phone}</span>}
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="address">Home Address *</label>
+            <label htmlFor="address">Home Address * (from your account)</label>
             <textarea
               id="address"
               name="address"
               value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter your full address"
+              readOnly
+              className="readonly-field"
               rows="3"
             />
             {errors.address && <span className="error">{errors.address}</span>}
           </div>
+          
+          <p className="form-note">📝 Need to update your info? <Link to="/profile">Edit your profile</Link> first.</p>
         </fieldset>
 
         <fieldset>

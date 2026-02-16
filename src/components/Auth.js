@@ -3,7 +3,7 @@ import { useAuth } from '../services/unified-auth';
 import { useNavigate, Navigate } from 'react-router-dom';
 
 const Auth = () => {
-  const { isLoggedIn, user, login, register, logout, isAdmin } = useAuth();
+  const { isLoggedIn, user, login, register, isAdmin } = useAuth();
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState('user'); // 'user' or 'admin'
@@ -85,12 +85,6 @@ const Auth = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    setFormData({ email: '', password: '', confirmPassword: '', name: '', phone: '', address: '' });
-    setMessage({ text: 'You have been logged out.', type: 'success' });
-  };
-
   const switchTab = (tab) => {
     setActiveTab(tab);
     setIsRegistering(false);
@@ -129,8 +123,9 @@ const Auth = () => {
 
         <div className="auth-content">
           <h2>
-            {activeTab === 'admin' ? 'Admin ' : ''}
-            {isRegistering ? 'Registration' : 'Sign In'}
+            {activeTab === 'admin' 
+              ? (isRegistering ? 'Admin Registration' : 'Admin Sign In')
+              : (isRegistering ? 'Become a Member' : 'Member Login')}
           </h2>
 
           <form onSubmit={isRegistering ? handleRegister : handleLogin}>
@@ -174,6 +169,7 @@ const Auth = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
+                autoComplete={isRegistering ? "new-password" : "current-password"}
                 required
               />
             </div>
@@ -201,6 +197,7 @@ const Auth = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Confirm your password"
+                    autoComplete="new-password"
                     required
                   />
                 </div>
@@ -232,7 +229,9 @@ const Auth = () => {
             )}
 
             <button type="submit" className="btn btn-primary btn-full">
-              {isRegistering ? 'Create Account' : 'Sign In'}
+              {isRegistering 
+                ? (activeTab === 'admin' ? 'Create Admin Account' : 'Become a Member')
+                : (activeTab === 'admin' ? 'Admin Sign In' : 'Member Login')}
             </button>
           </form>
 
@@ -243,22 +242,22 @@ const Auth = () => {
           <div className="auth-switch">
             {isRegistering ? (
               <p>
-                Already have an account?{' '}
+                Already a member?{' '}
                 <button 
                   className="link-btn" 
-                  onClick={() => { setIsRegistering(false); setMessage({ text: '', type: '' }); }}
+                  onClick={() => { setIsRegistering(false); setMessage({ text: '', type: '' }); setFormData({ email: '', password: '', confirmPassword: '', name: '', phone: '', address: '' }); }}
                 >
-                  Sign in here
+                  {activeTab === 'admin' ? 'Admin Sign In' : 'Member Login'}
                 </button>
               </p>
             ) : (
               <p>
-                Don't have an account?{' '}
+                {activeTab === 'admin' ? "Don't have an admin account?" : 'Not a member yet?'}{' '}
                 <button 
                   className="link-btn" 
-                  onClick={() => { setIsRegistering(true); setMessage({ text: '', type: '' }); }}
+                  onClick={() => { setIsRegistering(true); setMessage({ text: '', type: '' }); setFormData({ email: '', password: '', confirmPassword: '', name: '', phone: '', address: '' }); }}
                 >
-                  Register now
+                  {activeTab === 'admin' ? 'Register as Admin' : 'Become a Member'}
                 </button>
               </p>
             )}

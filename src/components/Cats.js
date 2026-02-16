@@ -1,106 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getCats as fetchCats, getCustomCats } from '../services/cats-data';
 
 const Cats = () => {
   const [cats, setCats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCat, setSelectedCat] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterAge, setFilterAge] = useState('all');
+  const [filterSize, setFilterSize] = useState('all');
+  const [filterGender, setFilterGender] = useState('all');
+  const [filterAge, setFilterAge] = useState(20); // Max age in years
 
-  // Sample cat data - in a real app, this would come from an API
-  const sampleCats = [
-    {
-      id: 1,
-      name: 'Whiskers',
-      breed: 'Persian',
-      age: '2 years',
-      gender: 'Male',
-      color: 'White',
-      personality: 'Calm and affectionate, loves to cuddle',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placekitten.com/300/300'
-    },
-    {
-      id: 2,
-      name: 'Luna',
-      breed: 'Siamese',
-      age: '1 year',
-      gender: 'Female',
-      color: 'Cream with brown points',
-      personality: 'Playful and vocal, loves attention',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placekitten.com/301/300'
-    },
-    {
-      id: 3,
-      name: 'Oliver',
-      breed: 'British Shorthair',
-      age: '3 years',
-      gender: 'Male',
-      color: 'Grey',
-      personality: 'Gentle giant, great with children',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placekitten.com/302/300'
-    },
-    {
-      id: 4,
-      name: 'Mochi',
-      breed: 'Scottish Fold',
-      age: '6 months',
-      gender: 'Female',
-      color: 'Tabby',
-      personality: 'Curious and energetic, loves to play',
-      vaccinated: true,
-      neutered: false,
-      image: 'https://placekitten.com/303/300'
-    },
-    {
-      id: 5,
-      name: 'Shadow',
-      breed: 'Domestic Shorthair',
-      age: '4 years',
-      gender: 'Male',
-      color: 'Black',
-      personality: 'Independent but loyal, perfect for quiet homes',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placekitten.com/304/300'
-    },
-    {
-      id: 6,
-      name: 'Ginger',
-      breed: 'Maine Coon',
-      age: '2 years',
-      gender: 'Female',
-      color: 'Orange Tabby',
-      personality: 'Friendly and sociable, gets along with other pets',
-      vaccinated: true,
-      neutered: true,
-      image: 'https://placekitten.com/305/300'
-    }
-  ];
+  // Load cats from cats-data.js and listen for changes
+  const loadCats = () => {
+    setCats([...fetchCats(), ...getCustomCats()]);
+    setLoading(false);
+  };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setCats(sampleCats);
-      setLoading(false);
-    }, 500);
+    loadCats();
+    
+    // Listen for pet status changes (real-time updates)
+    const handlePetChange = () => loadCats();
+    window.addEventListener('petStatusChanged', handlePetChange);
+    window.addEventListener('petDataChanged', handlePetChange);
+    window.addEventListener('storage', handlePetChange);
+    
+    return () => {
+      window.removeEventListener('petStatusChanged', handlePetChange);
+      window.removeEventListener('petDataChanged', handlePetChange);
+      window.removeEventListener('storage', handlePetChange);
+    };
   }, []);
 
+  // Helper to parse age string to number
+  const parseAge = (ageStr) => {
+    if (!ageStr) return 0;
+    const match = ageStr.match(/(\d+)/);
+    if (!match) return 0;
+    const num = parseInt(match[1]);
+    if (ageStr.toLowerCase().includes('month')) return num / 12;
+    return num;
+  };
+
   const filteredCats = cats.filter(cat => {
-    const matchesSearch = cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         cat.breed.toLowerCase().includes(searchTerm.toLowerCase());
+    // Only show available cats
+    if (cat.status !== 'Available') return false;
     
-    if (filterAge === 'all') return matchesSearch;
-    if (filterAge === 'kitten') return matchesSearch && cat.age.includes('month');
-    if (filterAge === 'adult') return matchesSearch && cat.age.includes('year');
-    return matchesSearch;
+    const catName = cat.name || '';
+    const catBreed = cat.breed || '';
+    const matchesSearch = catName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         catBreed.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Size filter
+    const matchesSize = filterSize === 'all' || (cat.size && cat.size.toLowerCase() === filterSize.toLowerCase());
+    
+    // Gender filter
+    const matchesGender = filterGender === 'all' || (cat.gender && cat.gender.toLowerCase() === filterGender.toLowerCase());
+    
+    // Age filter (slider)
+    const catAge = parseAge(cat.age);
+    const matchesAge = catAge <= filterAge;
+    
+    return matchesSearch && matchesSize && matchesGender && matchesAge;
   });
 
   const openModal = (cat) => {
@@ -138,14 +100,45 @@ const Cats = () => {
           className="search-input"
         />
         <select 
-          value={filterAge} 
-          onChange={(e) => setFilterAge(e.target.value)}
+          value={filterGender} 
+          onChange={(e) => setFilterGender(e.target.value)}
           className="filter-select"
         >
-          <option value="all">All Ages</option>
-          <option value="kitten">Kittens (Under 1 year)</option>
-          <option value="adult">Adults (1+ years)</option>
+          <option value="all">All Genders</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
         </select>
+        <select 
+          value={filterSize} 
+          onChange={(e) => setFilterSize(e.target.value)}
+          className="filter-select"
+        >
+          <option value="all">All Sizes</option>
+          <option value="small">Small</option>
+          <option value="medium">Medium</option>
+          <option value="large">Large</option>
+        </select>
+      </div>
+      
+      {/* Age Range Slider */}
+      <div className="age-slider-container">
+        <label className="age-slider-label">
+          Max Age: <span className="age-value">{filterAge} {filterAge === 1 ? 'year' : 'years'}</span>
+        </label>
+        <input
+          type="range"
+          min="1"
+          max="20"
+          value={filterAge}
+          onChange={(e) => setFilterAge(parseInt(e.target.value))}
+          className="age-slider"
+        />
+        <div className="age-slider-labels">
+          <span>1 yr</span>
+          <span>5 yrs</span>
+          <span>10 yrs</span>
+          <span>20 yrs</span>
+        </div>
       </div>
 
       {/* Results count */}
@@ -158,18 +151,18 @@ const Cats = () => {
         {filteredCats.map(cat => (
           <div key={cat.id} className="pet-card">
             <div className="pet-image">
-              <img src={cat.image} alt={cat.name} />
+              <img src={cat.image} alt={cat.name || 'Cat'} />
               {cat.vaccinated && <span className="badge vaccinated">Vaccinated</span>}
             </div>
             <div className="pet-info">
-              <h3>{cat.name}</h3>
-              <p className="pet-breed">{cat.breed}</p>
+              <h3>{cat.name || 'Unknown'}</h3>
+              <p className="pet-breed">{cat.breed || 'Mixed'}</p>
               <div className="pet-details">
-                <span>{cat.age}</span>
-                <span>{cat.gender}</span>
-                <span>{cat.color}</span>
+                <span>{cat.age || 'Unknown'}</span>
+                <span>{cat.gender || 'Unknown'}</span>
+                <span>{cat.color || ''}</span>
               </div>
-              <p className="pet-personality">{cat.personality}</p>
+              <p className="pet-personality">{cat.personality || ''}</p>
               <div className="pet-actions">
                 <button className="btn btn-outline" onClick={() => openModal(cat)}>
                   View Details
