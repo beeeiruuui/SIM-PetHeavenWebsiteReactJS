@@ -47,6 +47,9 @@ const Dogs = () => {
     // Only show available dogs
     if (dog.status !== 'Available') return false;
     
+    // Only show vaccinated dogs
+    if (!dog.vaccinated) return false;
+    
     const dogName = dog.name || '';
     const dogBreed = dog.breed || '';
     const matchesSearch = dogName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -204,7 +207,7 @@ const Dogs = () => {
                     <tr><td><strong>Size:</strong></td><td>{selectedDog.size}</td></tr>
                     <tr><td><strong>Color:</strong></td><td>{selectedDog.color}</td></tr>
                     <tr><td><strong>Vaccinated:</strong></td><td>{selectedDog.vaccinated ? 'Yes ✓' : 'No'}</td></tr>
-                    <tr><td><strong>Neutered:</strong></td><td>{selectedDog.neutered ? 'Yes ✓' : 'No'}</td></tr>
+                    <tr><td><strong>Neutered/Spayed:</strong></td><td>{selectedDog.neutered ? 'Yes ✓' : 'No'}</td></tr>
                   </tbody>
                 </table>
                 <h3>Personality</h3>

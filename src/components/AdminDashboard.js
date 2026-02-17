@@ -1237,7 +1237,7 @@ const AdminDashboard = () => {
                     <th>Color</th>
                     <th>Status</th>
                     <th>Vaccinated</th>
-                    <th>Neutered</th>
+                    <th>Neutered/Spayed</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -1305,7 +1305,7 @@ const AdminDashboard = () => {
                     <th>Size</th>
                     <th>Status</th>
                     <th>Vaccinated</th>
-                    <th>Neutered</th>
+                    <th>Neutered/Spayed</th>
                     <th>Actions</th>
                   </tr>
                 </thead>

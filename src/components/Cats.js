@@ -47,6 +47,9 @@ const Cats = () => {
     // Only show available cats
     if (cat.status !== 'Available') return false;
     
+    // Only show vaccinated cats
+    if (!cat.vaccinated) return false;
+    
     const catName = cat.name || '';
     const catBreed = cat.breed || '';
     const matchesSearch = catName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -202,7 +205,7 @@ const Cats = () => {
                     <tr><td><strong>Gender:</strong></td><td>{selectedCat.gender}</td></tr>
                     <tr><td><strong>Color:</strong></td><td>{selectedCat.color}</td></tr>
                     <tr><td><strong>Vaccinated:</strong></td><td>{selectedCat.vaccinated ? 'Yes ✓' : 'No'}</td></tr>
-                    <tr><td><strong>Neutered:</strong></td><td>{selectedCat.neutered ? 'Yes ✓' : 'No'}</td></tr>
+                    <tr><td><strong>Neutered/Spayed:</strong></td><td>{selectedCat.neutered ? 'Yes ✓' : 'No'}</td></tr>
                   </tbody>
                 </table>
                 <h3>Personality</h3>
