@@ -1,6 +1,16 @@
 // Dog data for Pet Heaven website
 // Centralized dog data with localStorage for status tracking
 
+// ========== IMPORT DOG IMAGES ==========
+import BuddyImg from '../assets/Dogs/Golden_Golden_Retriever_Dog.jpg';
+import BellaImg from '../assets/Dogs/Chocolate_Labrador_Retriever_Dog.jpg';
+import MaxImg from '../assets/Dogs/Black_and_Tan_German_Shepherd_Dog.jpg';
+import CocoImg from '../assets/Dogs/White_Poodle_Dog.jpg';
+import RockyImg from '../assets/Dogs/Brindle_Bulldog_Dog.jpg';
+import DaisyImg from '../assets/Dogs/Brown_and_White_Shih_Tzu_Dog.jpg';
+import CharlieImg from '../assets/Dogs/Tricolor_Beagle_Dog.jpg';
+import MiloImg from '../assets/Dogs/Red_and_White_Corgi_Dog.jpg';
+
 // ========== DOG DATA ==========
 const localDogs = [
   {
@@ -15,7 +25,7 @@ const localDogs = [
     personality: 'Friendly and loyal, great with families and children',
     vaccinated: true,
     neutered: true,
-    image: 'https://placedog.net/300/300?id=1'
+    image: BuddyImg
   },
   {
     id: 102,
@@ -29,7 +39,7 @@ const localDogs = [
     personality: 'Energetic and playful, loves outdoor activities',
     vaccinated: true,
     neutered: true,
-    image: 'https://placedog.net/301/300?id=2'
+    image: BellaImg
   },
   {
     id: 103,
@@ -43,7 +53,7 @@ const localDogs = [
     personality: 'Intelligent and protective, excellent guard dog',
     vaccinated: true,
     neutered: true,
-    image: 'https://placedog.net/302/300?id=3'
+    image: MaxImg
   },
   {
     id: 104,
@@ -57,7 +67,7 @@ const localDogs = [
     personality: 'Smart and elegant, hypoallergenic coat',
     vaccinated: true,
     neutered: false,
-    image: 'https://placedog.net/303/300?id=4'
+    image: CocoImg
   },
   {
     id: 105,
@@ -71,7 +81,7 @@ const localDogs = [
     personality: 'Calm and courageous, good for apartment living',
     vaccinated: true,
     neutered: true,
-    image: 'https://placedog.net/304/300?id=5'
+    image: RockyImg
   },
   {
     id: 106,
@@ -85,7 +95,7 @@ const localDogs = [
     personality: 'Affectionate lap dog, great companion',
     vaccinated: true,
     neutered: true,
-    image: 'https://placedog.net/305/300?id=6'
+    image: DaisyImg
   },
   {
     id: 107,
@@ -99,7 +109,7 @@ const localDogs = [
     personality: 'Curious and merry, loves to explore',
     vaccinated: true,
     neutered: true,
-    image: 'https://placedog.net/306/300?id=7'
+    image: CharlieImg
   },
   {
     id: 108,
@@ -113,7 +123,7 @@ const localDogs = [
     personality: 'Playful and outgoing, loves attention',
     vaccinated: true,
     neutered: false,
-    image: 'https://placedog.net/307/300?id=8'
+    image: MiloImg
   }
 ];
 

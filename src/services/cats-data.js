@@ -1,6 +1,14 @@
 // Cat data for Pet Heaven website
 // Centralized cat data with localStorage for status tracking
 
+// ========== IMPORT CAT IMAGES ==========
+import WhiskersImg from '../assets/Cats/White_Persian_Cat.jpg';
+import LunaImg from '../assets/Cats/Brown_Points_Siamese_Cat.jpg';
+import OliverImg from '../assets/Cats/Grey_British_Shorthair_Cat.jpg';
+import MochiImg from '../assets/Cats/Tabby_Scottish_Fold_Cat.jpg';
+import ShadowImg from '../assets/Cats/Black_Domestic_Shorthair_Cat.jpg';
+import GingerImg from '../assets/Cats/Orange_Tabby_Maine_Coon_Cat.jpg';
+
 // ========== CAT DATA ==========
 const localCats = [
   {
@@ -14,7 +22,7 @@ const localCats = [
     personality: 'Calm and affectionate, loves to cuddle',
     vaccinated: true,
     neutered: true,
-    image: 'https://placekitten.com/300/300'
+    image: WhiskersImg
   },
   {
     id: 2,
@@ -27,7 +35,7 @@ const localCats = [
     personality: 'Playful and vocal, loves attention',
     vaccinated: true,
     neutered: true,
-    image: 'https://placekitten.com/301/300'
+    image: LunaImg
   },
   {
     id: 3,
@@ -40,7 +48,7 @@ const localCats = [
     personality: 'Gentle giant, great with children',
     vaccinated: true,
     neutered: true,
-    image: 'https://placekitten.com/302/300'
+    image: OliverImg
   },
   {
     id: 4,
@@ -53,7 +61,7 @@ const localCats = [
     personality: 'Curious and energetic, loves to play',
     vaccinated: true,
     neutered: false,
-    image: 'https://placekitten.com/303/300'
+    image: MochiImg
   },
   {
     id: 5,
@@ -66,7 +74,7 @@ const localCats = [
     personality: 'Independent but loyal, perfect for quiet homes',
     vaccinated: true,
     neutered: true,
-    image: 'https://placekitten.com/304/300'
+    image: ShadowImg
   },
   {
     id: 6,
@@ -79,7 +87,7 @@ const localCats = [
     personality: 'Friendly and sociable, gets along with other pets',
     vaccinated: true,
     neutered: true,
-    image: 'https://placekitten.com/305/300'
+    image: GingerImg
   }
 ];
 
