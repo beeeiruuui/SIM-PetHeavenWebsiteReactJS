@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/SIM-PetHeavenWebsiteReactJS/static/css/main.bb114fff.css",
-    "main.js": "/SIM-PetHeavenWebsiteReactJS/static/js/main.59398f12.js",
+    "main.css": "/SIM-PetHeavenWebsiteReactJS/static/css/main.d001880b.css",
+    "main.js": "/SIM-PetHeavenWebsiteReactJS/static/js/main.00fee1c1.js",
     "static/js/453.6a7f897e.chunk.js": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js",
     "static/media/Brindle_Bulldog_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Brindle_Bulldog_Dog.95a00dc1c76ed130afa8.jpg",
     "static/media/Chocolate_Labrador_Retriever_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Chocolate_Labrador_Retriever_Dog.61174e116e905b136d4c.jpg",
@@ -15,12 +15,12 @@
     "static/media/hero-background.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/hero-background.64fe8a7ce338ca908421.jpg",
     "static/media/Red_and_White_Corgi_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Red_and_White_Corgi_Dog.8f4586c65c9241ce6256.jpg",
     "index.html": "/SIM-PetHeavenWebsiteReactJS/index.html",
-    "main.bb114fff.css.map": "/SIM-PetHeavenWebsiteReactJS/static/css/main.bb114fff.css.map",
-    "main.59398f12.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/main.59398f12.js.map",
+    "main.d001880b.css.map": "/SIM-PetHeavenWebsiteReactJS/static/css/main.d001880b.css.map",
+    "main.00fee1c1.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/main.00fee1c1.js.map",
     "453.6a7f897e.chunk.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.bb114fff.css",
-    "static/js/main.59398f12.js"
+    "static/css/main.d001880b.css",
+    "static/js/main.00fee1c1.js"
   ]
 }
