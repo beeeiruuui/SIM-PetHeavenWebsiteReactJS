@@ -157,7 +157,8 @@ export const addCat = (catData) => {
     ...catData,
     id: Date.now(),
     type: 'Cat',
-    status: 'Available'
+    status: 'Available',
+    image: catData.image || 'https://placehold.co/400x300/FFB6C1/333333?text=Cat+Photo'
   };
   customCats.push(newCat);
   localStorage.setItem('petHeaven_customCats', JSON.stringify(customCats));

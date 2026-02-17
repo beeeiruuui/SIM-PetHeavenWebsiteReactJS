@@ -193,7 +193,8 @@ export const addDog = (dogData) => {
     ...dogData,
     id: Date.now(),
     type: 'Dog',
-    status: 'Available'
+    status: 'Available',
+    image: dogData.image || 'https://placehold.co/400x300/FFB6C1/333333?text=Dog+Photo'
   };
   customDogs.push(newDog);
   localStorage.setItem('petHeaven_customDogs', JSON.stringify(customDogs));

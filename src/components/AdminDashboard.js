@@ -91,8 +91,9 @@ const AdminDashboard = () => {
   const [showPetModal, setShowPetModal] = useState(false);
   const [editingPet, setEditingPet] = useState(null);
   const [petForm, setPetForm] = useState({
-    name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false
+    name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: ''
   });
+  const [imagePreview, setImagePreview] = useState(null);
   const [petFilter, setPetFilter] = useState('all');
   const [petSearch, setPetSearch] = useState('');
   
@@ -166,9 +167,11 @@ const AdminDashboard = () => {
     if (pet) {
       setEditingPet(pet);
       setPetForm(pet);
+      setImagePreview(pet.image || null);
     } else {
       setEditingPet(null);
-      setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false });
+      setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '' });
+      setImagePreview(null);
     }
     setShowPetModal(true);
   };
@@ -176,7 +179,8 @@ const AdminDashboard = () => {
   const handleClosePetModal = () => {
     setShowPetModal(false);
     setEditingPet(null);
-    setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false });
+    setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '' });
+    setImagePreview(null);
   };
 
   const handlePetFormChange = (e) => {
@@ -185,6 +189,29 @@ const AdminDashboard = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image size must be less than 2MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result;
+        setImagePreview(base64);
+        setPetForm(prev => ({ ...prev, image: base64 }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSavePet = (e) => {
@@ -1476,6 +1503,31 @@ const AdminDashboard = () => {
                     />
                     Neutered/Spayed
                   </label>
+                </div>
+                <div className="form-group image-upload-group">
+                  <label>Pet Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="image-upload-input"
+                  />
+                  {imagePreview && (
+                    <div className="image-preview">
+                      <img src={imagePreview} alt="Preview" />
+                      <button 
+                        type="button" 
+                        className="btn btn-small btn-danger"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setPetForm(prev => ({ ...prev, image: '' }));
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  <small className="form-hint">Max 2MB. Supported: JPG, PNG, GIF</small>
                 </div>
                 <div className="modal-actions">
                   <button type="button" className="btn btn-secondary" onClick={handleClosePetModal}>Cancel</button>

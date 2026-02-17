@@ -3091,6 +3091,61 @@ legend {
   border-top: 1px solid var(--light-pink);
 }
 
+/* Image Upload Styles */
+.image-upload-group {
+  margin-top: 1rem;
+}
+
+.image-upload-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed var(--medium-pink);
+  border-radius: 8px;
+  background-color: var(--lightest-pink);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.image-upload-input:hover {
+  border-color: var(--primary-pink);
+  background-color: var(--light-pink);
+}
+
+.image-preview {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--medium-pink);
+  margin-bottom: 0.5rem;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 0.5rem;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.btn-small {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
 /* Member Modal Styles */
 .member-modal {
   max-width: 400px;
