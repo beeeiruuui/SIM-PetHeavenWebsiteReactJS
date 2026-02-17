@@ -1,16 +1,26 @@
 {
   "files": {
     "main.css": "/SIM-PetHeavenWebsiteReactJS/static/css/main.bb114fff.css",
-    "main.js": "/SIM-PetHeavenWebsiteReactJS/static/js/main.28df788b.js",
+    "main.js": "/SIM-PetHeavenWebsiteReactJS/static/js/main.59398f12.js",
     "static/js/453.6a7f897e.chunk.js": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js",
+    "static/media/Brindle_Bulldog_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Brindle_Bulldog_Dog.95a00dc1c76ed130afa8.jpg",
+    "static/media/Chocolate_Labrador_Retriever_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Chocolate_Labrador_Retriever_Dog.61174e116e905b136d4c.jpg",
+    "static/media/White_Poodle_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/White_Poodle_Dog.416f3f8229ad33f56a15.jpg",
+    "static/media/Tricolor_Beagle_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Tricolor_Beagle_Dog.602a06c0ffbade7887d4.jpg",
+    "static/media/Black_and_Tan_German_Shepherd_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Black_and_Tan_German_Shepherd_Dog.8ac990ad984cc50ea79f.jpg",
+    "static/media/Orange_Tabby_Maine_Coon_Cat.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Orange_Tabby_Maine_Coon_Cat.a0f2f4f8d731e1fdd13c.jpg",
+    "static/media/Golden_Golden_Retriever_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Golden_Golden_Retriever_Dog.8ac8668bb6ce15cd32eb.jpg",
+    "static/media/Brown_Points_Siamese_Cat.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Brown_Points_Siamese_Cat.7eee505a5cf8d5357e50.jpg",
+    "static/media/White_Persian_Cat.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/White_Persian_Cat.bb4952745478c001f60e.jpg",
     "static/media/hero-background.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/hero-background.64fe8a7ce338ca908421.jpg",
+    "static/media/Red_and_White_Corgi_Dog.jpg": "/SIM-PetHeavenWebsiteReactJS/static/media/Red_and_White_Corgi_Dog.8f4586c65c9241ce6256.jpg",
     "index.html": "/SIM-PetHeavenWebsiteReactJS/index.html",
     "main.bb114fff.css.map": "/SIM-PetHeavenWebsiteReactJS/static/css/main.bb114fff.css.map",
-    "main.28df788b.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/main.28df788b.js.map",
+    "main.59398f12.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/main.59398f12.js.map",
     "453.6a7f897e.chunk.js.map": "/SIM-PetHeavenWebsiteReactJS/static/js/453.6a7f897e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bb114fff.css",
-    "static/js/main.28df788b.js"
+    "static/js/main.59398f12.js"
   ]
 }
