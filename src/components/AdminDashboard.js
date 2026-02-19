@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../services/unified-auth';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { getAllCatsWithCustom, getAllDogsWithCustom, updatePetStatus, addPet as addPetToData, deleteCustomPet } from '../services/pet-data';
+import { getAllCatsWithCustom, getAllDogsWithCustom, updatePetStatus, addPet as addPetToData, deleteCustomPet, incrementTotalAdoptions, getTotalAdoptions, resetTotalAdoptions } from '../services/pet-data';
 
 const AdminDashboard = () => {
   const { isLoggedIn, user, isAdmin, logout, users } = useAuth();
@@ -154,7 +154,8 @@ const AdminDashboard = () => {
     totalPets: cats.length + dogs.length,
     totalCats: cats.length,
     totalDogs: dogs.length,
-    adoptedPets: [...cats, ...dogs].filter(p => p.status === 'Adopted').length,
+    adoptedPets: [...cats, ...dogs].filter(p => p.status === 'Adopted').length,  // Current adopted count
+    totalSuccessfulAdoptions: getTotalAdoptions(),  // Historical total adoptions
     pendingApproval: adoptions.filter(a => a.status === 'Pending').length,
     pendingPickup: adoptions.filter(a => a.status === 'Approved').length,
     totalMembers: users ? users.filter(u => u.role === 'user').length : 0,
@@ -362,12 +363,13 @@ const AdminDashboard = () => {
         } : a);
         localStorage.setItem('adoptionRequests', JSON.stringify(updated));
         
-        // Update pet status to 'Adopted'
+        // Update pet status to 'Adopted' and increment total adoptions
         if (adoption && adoption.petName) {
           const allPets = [...cats, ...dogs];
           const pet = allPets.find(p => p.name.toLowerCase() === adoption.petName.toLowerCase());
           if (pet) {
             updatePetStatus(pet.id, 'Adopted');
+            incrementTotalAdoptions();  // Increment total successful adoptions counter
             loadPets();
           }
         }
@@ -407,22 +409,30 @@ const AdminDashboard = () => {
         } : r);
         localStorage.setItem('releaseRequests', JSON.stringify(updated));
         
-        // Add the released pet to the system
+        // Handle the released pet
         if (releaseData) {
-          const newPet = {
-            name: releaseData.petName,
-            type: releaseData.petType === 'cat' ? 'Cat' : 'Dog',
-            breed: releaseData.petBreed || 'Mixed',
-            age: releaseData.petAge || 'Unknown',
-            gender: releaseData.petGender === 'male' ? 'Male' : 'Female',
-            status: 'Available',
-            vaccinated: releaseData.isVaccinated === 'yes',
-            neutered: releaseData.isNeutered === 'yes',
-            personality: releaseData.personality || 'Friendly pet looking for a new home',
-            image: releaseData.petType === 'cat' ? 'https://placekitten.com/300/300' : 'https://placedog.net/300/300'
-          };
-          addPetToData(newPet);
-          loadPets();
+          // Check if this is an adopted pet being released back
+          if (releaseData.isReleasingAdoptedPet && releaseData.originalPetId) {
+            // Update original pet's status back to 'Available' (reduces current adopted count)
+            updatePetStatus(releaseData.originalPetId, 'Available');
+            loadPets();
+          } else {
+            // Add as a new pet to the system
+            const newPet = {
+              name: releaseData.petName,
+              type: releaseData.petType === 'cat' ? 'Cat' : 'Dog',
+              breed: releaseData.petBreed || 'Mixed',
+              age: releaseData.petAge || 'Unknown',
+              gender: releaseData.petGender === 'male' ? 'Male' : 'Female',
+              status: 'Available',
+              vaccinated: releaseData.isVaccinated === 'yes',
+              neutered: releaseData.isNeutered === 'yes',
+              personality: releaseData.personality || 'Friendly pet looking for a new home',
+              image: releaseData.petType === 'cat' ? 'https://placekitten.com/300/300' : 'https://placedog.net/300/300'
+            };
+            addPetToData(newPet);
+            loadPets();
+          }
         }
       } else if (action === 'reject') {
         setReleases(prev => prev.map(r => r.id === id ? { ...r, status: 'Rejected' } : r));
@@ -686,7 +696,8 @@ const AdminDashboard = () => {
       'This will clear:\n' +
       '• All adoption requests\n' +
       '• All release requests\n' +
-      '• Custom added pets\n\n' +
+      '• Custom added pets\n' +
+      '• Total adoptions counter\n\n' +
       '⚠️ User accounts will NOT be deleted.\n\n' +
       'Click OK to proceed with reset.'
     );
@@ -701,12 +712,13 @@ const AdminDashboard = () => {
     localStorage.removeItem('adoptionRequests');
     localStorage.removeItem('releaseRequests');
     localStorage.removeItem('customPets');
+    resetTotalAdoptions();  // Reset total successful adoptions counter
     
     setAdoptions([]);
     setReleases([]);
     loadPets();
     
-    alert('✅ Reset completed!\n\n• All requests cleared\n• Custom pets cleared\n• User accounts preserved');
+    alert('✅ Reset completed!\n\n• All requests cleared\n• Custom pets cleared\n• Adoption counter reset\n• User accounts preserved');
   };
 
   // ========== ACTIVITY FEED CALCULATION ==========
@@ -954,7 +966,14 @@ const AdminDashboard = () => {
                 <span className="stat-icon">🏠</span>
                 <div className="stat-info">
                   <h3>{stats.adoptedPets}</h3>
-                  <p>Adopted</p>
+                  <p>Currently Adopted</p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <span className="stat-icon">🎉</span>
+                <div className="stat-info">
+                  <h3>{stats.totalSuccessfulAdoptions}</h3>
+                  <p>Successful Adoptions</p>
                 </div>
               </div>
               <div className="stat-card">

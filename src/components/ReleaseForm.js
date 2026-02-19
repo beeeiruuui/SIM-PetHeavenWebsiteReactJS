@@ -74,7 +74,10 @@ const ReleaseForm = () => {
         ...formData,
         status: 'Pending',
         submittedDate: new Date().toISOString(),
-        type: 'release'
+        type: 'release',
+        // Track original pet ID if releasing an adopted pet (so admin can update its status)
+        originalPetId: petToRelease?.id || null,
+        isReleasingAdoptedPet: !!petToRelease
       };
       
       const existingRequests = JSON.parse(localStorage.getItem('releaseRequests') || '[]');

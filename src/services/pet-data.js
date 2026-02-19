@@ -123,6 +123,28 @@ export const updatePetStatusByName = (petName, newStatus) => {
   return false;
 };
 
+// ========== TOTAL SUCCESSFUL ADOPTIONS TRACKING ==========
+
+// Get total successful adoptions (historical count that never decreases)
+export const getTotalAdoptions = () => {
+  const stored = localStorage.getItem('totalSuccessfulAdoptions');
+  return stored ? parseInt(stored, 10) : 0;
+};
+
+// Increment total successful adoptions
+export const incrementTotalAdoptions = () => {
+  const current = getTotalAdoptions();
+  localStorage.setItem('totalSuccessfulAdoptions', (current + 1).toString());
+  window.dispatchEvent(new CustomEvent('adoptionStatsChanged'));
+  return current + 1;
+};
+
+// Reset total successful adoptions (for admin reset)
+export const resetTotalAdoptions = () => {
+  localStorage.removeItem('totalSuccessfulAdoptions');
+  window.dispatchEvent(new CustomEvent('adoptionStatsChanged'));
+};
+
 // ========== COMBINED STATS FUNCTIONS ==========
 
 export const getPetStats = () => {
@@ -134,12 +156,13 @@ export const getPetStats = () => {
     totalCats: catStats.totalCats,
     totalDogs: dogStats.totalDogs,
     availablePets: catStats.availableCats + dogStats.availableDogs,
-    adoptedPets: catStats.adoptedCats + dogStats.adoptedDogs,
+    adoptedPets: catStats.adoptedCats + dogStats.adoptedDogs,  // Current adopted (can decrease when released back)
     pendingPets: catStats.pendingCats + dogStats.pendingDogs,
     availableCats: catStats.availableCats,
     availableDogs: dogStats.availableDogs,
     vaccinatedPets: catStats.vaccinatedCats + dogStats.vaccinatedDogs,
-    neuteredPets: catStats.neuteredCats + dogStats.neuteredDogs
+    neuteredPets: catStats.neuteredCats + dogStats.neuteredDogs,
+    totalSuccessfulAdoptions: getTotalAdoptions()  // Historical total (never decreases)
   };
 };
 
