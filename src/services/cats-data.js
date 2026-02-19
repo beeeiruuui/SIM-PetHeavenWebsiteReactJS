@@ -106,14 +106,31 @@ const setCatStatus = (catId, status) => {
   window.dispatchEvent(new CustomEvent('petStatusChanged', { detail: { petId: catId, status, type: 'Cat' } }));
 };
 
+// Get base cat edits from localStorage
+const getBaseCatEdits = (catId) => {
+  const stored = localStorage.getItem(`petEdits_${catId}`);
+  return stored ? JSON.parse(stored) : null;
+};
+
+// Set base cat edits in localStorage
+const setBaseCatEdits = (catId, edits) => {
+  localStorage.setItem(`petEdits_${catId}`, JSON.stringify(edits));
+  window.dispatchEvent(new CustomEvent('petDataChanged', { detail: { type: 'Cat' } }));
+};
+
 // ========== CAT FUNCTIONS ==========
 
-// Get all cats with current status from localStorage
+// Get all cats with current status and edits from localStorage
 export const getCats = () => {
-  return localCats.map(cat => ({
-    ...cat,
-    status: getCatStatus(cat.id)
-  }));
+  return localCats.map(cat => {
+    const edits = getBaseCatEdits(cat.id);
+    return {
+      ...cat,
+      ...(edits || {}),
+      id: cat.id, // Ensure ID is never overwritten
+      status: getCatStatus(cat.id)
+    };
+  });
 };
 
 // Get available cats only
@@ -146,6 +163,27 @@ export const updateCatStatusByName = (catName, newStatus) => {
     return true;
   }
   return false;
+};
+
+// Update base cat data (name, breed, age, color, gender, type, etc.)
+export const updateBaseCat = (catId, updatedData) => {
+  // Check if this is a base cat
+  const baseCat = localCats.find(c => c.id === catId);
+  if (baseCat) {
+    // Store ALL edits (excluding only id which must stay fixed)
+    const { id, ...editableFields } = updatedData;
+    setBaseCatEdits(catId, editableFields);
+    if (updatedData.status) {
+      setCatStatus(catId, updatedData.status);
+    }
+    return true;
+  }
+  return false;
+};
+
+// Check if cat is a base cat
+export const isBaseCat = (catId) => {
+  return localCats.some(c => c.id === catId);
 };
 
 // ========== CUSTOM CAT FUNCTIONS (Admin) ==========

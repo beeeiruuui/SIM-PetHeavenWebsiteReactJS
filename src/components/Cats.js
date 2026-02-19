@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getCats as fetchCats, getCustomCats } from '../services/cats-data';
+import { getAllCats } from '../services/pet-manager';
 
 const Cats = () => {
   const [cats, setCats] = useState([]);
@@ -11,9 +11,9 @@ const Cats = () => {
   const [filterGender, setFilterGender] = useState('all');
   const [filterAge, setFilterAge] = useState(20); // Max age in years
 
-  // Load cats from cats-data.js and listen for changes
+  // Load cats from pet-manager.js and listen for changes
   const loadCats = () => {
-    setCats([...fetchCats(), ...getCustomCats()]);
+    setCats(getAllCats());
     setLoading(false);
   };
 

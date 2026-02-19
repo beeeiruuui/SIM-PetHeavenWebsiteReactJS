@@ -14,6 +14,8 @@ import {
   getAllCatsWithCustom, 
   deleteCustomCat,
   updateCustomCat,
+  updateBaseCat,
+  isBaseCat,
   getCatStats,
   resetAllCatStatuses,
   localCats 
@@ -31,6 +33,8 @@ import {
   getAllDogsWithCustom, 
   deleteCustomDog,
   updateCustomDog,
+  updateBaseDog,
+  isBaseDog,
   getDogStats,
   resetAllDogStatuses,
   localDogs 
@@ -205,29 +209,51 @@ export const deleteCustomPet = (petId) => {
 export const updateCustomPet = (petId, updatedData, originalType) => {
   const customCats = getCustomCats();
   const customDogs = getCustomDogs();
-  const isCustomCat = customCats.find(c => c.id === petId);
-  const isCustomDog = customDogs.find(d => d.id === petId);
+  const foundCustomCat = customCats.find(c => c.id === petId);
+  const foundCustomDog = customDogs.find(d => d.id === petId);
   
   // Check if type is changing
   const newType = updatedData.type;
   
-  if (isCustomCat && newType === 'Dog') {
+  if (foundCustomCat && newType === 'Dog') {
     // Changing from Cat to Dog - delete from cats, add to dogs
     deleteCustomCat(petId);
     return addDog({ ...updatedData, id: undefined }); // Let addDog generate new ID
-  } else if (isCustomDog && newType === 'Cat') {
+  } else if (foundCustomDog && newType === 'Cat') {
     // Changing from Dog to Cat - delete from dogs, add to cats
     deleteCustomDog(petId);
     return addCat({ ...updatedData, id: undefined }); // Let addCat generate new ID
-  } else if (isCustomCat) {
+  } else if (foundCustomCat) {
     // Update cat
     return updateCustomCat(petId, updatedData);
-  } else if (isCustomDog) {
+  } else if (foundCustomDog) {
     // Update dog
     return updateCustomDog(petId, updatedData);
   }
   
-  return false; // Not a custom pet (base pet can't be fully edited)
+  return false; // Not a custom pet
+};
+
+// Update any pet (both base and custom pets)
+export const updatePet = (petId, updatedData, originalType) => {
+  const customCats = getCustomCats();
+  const customDogs = getCustomDogs();
+  const foundCustomCat = customCats.find(c => c.id === petId);
+  const foundCustomDog = customDogs.find(d => d.id === petId);
+  
+  // If it's a custom pet, use updateCustomPet
+  if (foundCustomCat || foundCustomDog) {
+    return updateCustomPet(petId, updatedData, originalType);
+  }
+  
+  // If it's a base pet, use updateBaseCat or updateBaseDog
+  if (isBaseCat(petId)) {
+    return updateBaseCat(petId, updatedData);
+  } else if (isBaseDog(petId)) {
+    return updateBaseDog(petId, updatedData);
+  }
+  
+  return false; // Pet not found
 };
 
 // Check if a pet is a custom pet (editable)

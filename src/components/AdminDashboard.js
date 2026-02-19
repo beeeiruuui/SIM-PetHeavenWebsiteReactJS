@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../services/unified-auth';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { getAllCatsWithCustom, getAllDogsWithCustom, updatePetStatus, addPet as addPetToData, deleteCustomPet, updateCustomPet, isCustomPet, incrementTotalAdoptions, getTotalAdoptions, resetTotalAdoptions } from '../services/pet-data';
+import { getAllCats, getAllDogs, updatePetStatus, addPet as addPetToData, deleteCustomPet, updatePet, incrementTotalAdoptions, getTotalAdoptions, resetTotalAdoptions } from '../services/pet-manager';
 
 const AdminDashboard = () => {
   const { isLoggedIn, user, isAdmin, logout, users } = useAuth();
@@ -68,8 +68,8 @@ const AdminDashboard = () => {
   
   // Load pets and listen for changes
   const loadPets = () => {
-    setCats(getAllCatsWithCustom());
-    setDogs(getAllDogsWithCustom());
+    setCats(getAllCats());
+    setDogs(getAllDogs());
   };
   
   useEffect(() => {
@@ -91,11 +91,14 @@ const AdminDashboard = () => {
   const [showPetModal, setShowPetModal] = useState(false);
   const [editingPet, setEditingPet] = useState(null);
   const [petForm, setPetForm] = useState({
-    name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: ''
+    name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: '', personality: ''
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [petFilter, setPetFilter] = useState('all');
   const [petSearch, setPetSearch] = useState('');
+  
+  // Refs for form inputs to bypass React state issues
+  const formRef = React.useRef(null);
   
   // Member view modal state
   const [showMemberModal, setShowMemberModal] = useState(false);
@@ -164,14 +167,27 @@ const AdminDashboard = () => {
   };
 
   // Pet management functions
-  const handleOpenPetModal = (pet = null) => {
+  const handleOpenPetModal = (pet = null, defaultType = 'Dog') => {
     if (pet) {
       setEditingPet(pet);
-      setPetForm(pet);
+      // Ensure all form fields are properly initialized
+      setPetForm({
+        name: pet.name || '',
+        type: pet.type || 'Dog',
+        breed: pet.breed || '',
+        age: pet.age || '',
+        gender: pet.gender || 'Male',
+        status: pet.status || 'Available',
+        vaccinated: pet.vaccinated || false,
+        neutered: pet.neutered || false,
+        image: pet.image || '',
+        color: pet.color || '',
+        personality: pet.personality || ''
+      });
       setImagePreview(pet.image || null);
     } else {
       setEditingPet(null);
-      setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: '' });
+      setPetForm({ name: '', type: defaultType, breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: '', personality: '' });
       setImagePreview(null);
     }
     setShowPetModal(true);
@@ -180,7 +196,7 @@ const AdminDashboard = () => {
   const handleClosePetModal = () => {
     setShowPetModal(false);
     setEditingPet(null);
-    setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: '' });
+    setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: '', personality: '' });
     setImagePreview(null);
   };
 
@@ -217,20 +233,29 @@ const AdminDashboard = () => {
 
   const handleSavePet = (e) => {
     e.preventDefault();
+    
+    // Read directly from form DOM
+    const form = formRef.current;
+    const formData = {
+      name: form.querySelector('[name="name"]')?.value || '',
+      type: form.querySelector('[name="type"]')?.value || 'Dog',
+      breed: form.querySelector('[name="breed"]')?.value || '',
+      age: form.querySelector('[name="age"]')?.value || '',
+      gender: form.querySelector('[name="gender"]')?.value || 'Male',
+      status: form.querySelector('[name="status"]')?.value || 'Available',
+      color: form.querySelector('[name="color"]')?.value || '',
+      personality: form.querySelector('[name="personality"]')?.value || '',
+      vaccinated: form.querySelector('[name="vaccinated"]')?.checked || false,
+      neutered: form.querySelector('[name="neutered"]')?.checked || false,
+      image: petForm.image || ''
+    };
+    
     if (editingPet) {
-      // Check if this is a custom pet (fully editable) or base pet (status only)
-      if (isCustomPet(editingPet.id)) {
-        // Update all fields for custom pet
-        updateCustomPet(editingPet.id, petForm, editingPet.type);
-      } else {
-        // Base pet - can only update status
-        updatePetStatus(editingPet.id, petForm.status);
-      }
-      loadPets(); // Refresh the list
+      updatePet(editingPet.id, formData, editingPet.type);
+      loadPets();
     } else {
-      // Add new pet via pet-data.js
-      addPetToData(petForm);
-      loadPets(); // Refresh the list
+      addPetToData(formData);
+      loadPets();
     }
     handleClosePetModal();
   };
@@ -1260,7 +1285,7 @@ const AdminDashboard = () => {
           <div className="admin-section">
             <h2>🐈 Cat Management</h2>
             <div className="admin-actions-bar">
-              <button className="btn btn-primary" onClick={() => handleOpenPetModal()}>+ Add New Cat</button>
+              <button className="btn btn-primary" onClick={() => handleOpenPetModal(null, 'Cat')}>+ Add New Cat</button>
               <div className="admin-filters">
                 <input
                   type="text"
@@ -1328,7 +1353,7 @@ const AdminDashboard = () => {
           <div className="admin-section">
             <h2>🐕 Dog Management</h2>
             <div className="admin-actions-bar">
-              <button className="btn btn-primary" onClick={() => handleOpenPetModal()}>+ Add New Dog</button>
+              <button className="btn btn-primary" onClick={() => handleOpenPetModal(null, 'Dog')}>+ Add New Dog</button>
               <div className="admin-filters">
                 <input
                   type="text"
@@ -1447,7 +1472,7 @@ const AdminDashboard = () => {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <button className="modal-close" onClick={handleClosePetModal}>×</button>
               <h2>{editingPet ? 'Edit Pet' : 'Add New Pet'}</h2>
-              <form onSubmit={handleSavePet}>
+              <form ref={formRef} onSubmit={handleSavePet} key={editingPet ? editingPet.id : 'new'}>
                 <div className="form-row">
                   <div className="form-group">
                     <label>Pet Name *</label>
@@ -1462,7 +1487,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="form-group">
                     <label>Type *</label>
-                    <select name="type" value={petForm.type} onChange={handlePetFormChange} required>
+                    <select name="type" defaultValue={petForm.type} required>
                       <option value="Dog">Dog</option>
                       <option value="Cat">Cat</option>
                     </select>
@@ -1495,7 +1520,7 @@ const AdminDashboard = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label>Gender *</label>
-                    <select name="gender" value={petForm.gender} onChange={handlePetFormChange} required>
+                    <select name="gender" defaultValue={petForm.gender} required>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                     </select>
@@ -1514,7 +1539,7 @@ const AdminDashboard = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label>Status *</label>
-                    <select name="status" value={petForm.status} onChange={handlePetFormChange} required>
+                    <select name="status" defaultValue={petForm.status} required>
                       <option value="Available">Available</option>
                       <option value="Pending">Pending</option>
                       <option value="Adopted">Adopted</option>
@@ -1540,6 +1565,16 @@ const AdminDashboard = () => {
                     />
                     Neutered/Spayed
                   </label>
+                </div>
+                <div className="form-group">
+                  <label>Personality/Description</label>
+                  <textarea
+                    name="personality"
+                    value={petForm.personality}
+                    onChange={handlePetFormChange}
+                    placeholder="e.g., Calm and affectionate, loves to cuddle"
+                    rows="3"
+                  />
                 </div>
                 <div className="form-group image-upload-group">
                   <label>Pet Image</label>

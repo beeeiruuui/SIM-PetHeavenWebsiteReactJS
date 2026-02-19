@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getDogs as fetchDogs, getCustomDogs } from '../services/dogs-data';
+import { getAllDogs } from '../services/pet-manager';
 
 const Dogs = () => {
   const [dogs, setDogs] = useState([]);
@@ -11,9 +11,9 @@ const Dogs = () => {
   const [filterGender, setFilterGender] = useState('all');
   const [filterAge, setFilterAge] = useState(15); // Max age in years
 
-  // Load dogs from dogs-data.js and listen for changes
+  // Load dogs from pet-manager.js and listen for changes
   const loadDogs = () => {
-    setDogs([...fetchDogs(), ...getCustomDogs()]);
+    setDogs(getAllDogs());
     setLoading(false);
   };
 

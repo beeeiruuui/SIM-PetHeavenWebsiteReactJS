@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../services/unified-auth';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
-import { getCats, getCustomCats } from '../services/cats-data';
-import { getDogs, getCustomDogs } from '../services/dogs-data';
+import { getAllPets } from '../services/pet-manager';
 
 const Profile = () => {
   const { isLoggedIn, user, login, register, logout, updateProfile, deleteAccount } = useAuth();
@@ -34,9 +33,7 @@ const Profile = () => {
   // Navigate to release form with pet data
   const handleReleasePet = (pet) => {
     // Try to find the original pet data to get breed, gender, etc.
-    const allCats = [...getCats(), ...getCustomCats()];
-    const allDogs = [...getDogs(), ...getCustomDogs()];
-    const allPets = [...allCats, ...allDogs];
+    const allPets = getAllPets();
     
     const originalPet = allPets.find(p => 
       p.name && p.name.toLowerCase() === pet.petName.toLowerCase()

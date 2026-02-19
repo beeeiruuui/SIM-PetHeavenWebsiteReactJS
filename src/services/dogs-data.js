@@ -142,14 +142,31 @@ const setDogStatus = (dogId, status) => {
   window.dispatchEvent(new CustomEvent('petStatusChanged', { detail: { petId: dogId, status, type: 'Dog' } }));
 };
 
+// Get base dog edits from localStorage
+const getBaseDogEdits = (dogId) => {
+  const stored = localStorage.getItem(`petEdits_${dogId}`);
+  return stored ? JSON.parse(stored) : null;
+};
+
+// Set base dog edits in localStorage
+const setBaseDogEdits = (dogId, edits) => {
+  localStorage.setItem(`petEdits_${dogId}`, JSON.stringify(edits));
+  window.dispatchEvent(new CustomEvent('petDataChanged', { detail: { type: 'Dog' } }));
+};
+
 // ========== DOG FUNCTIONS ==========
 
-// Get all dogs with current status from localStorage
+// Get all dogs with current status and edits from localStorage
 export const getDogs = () => {
-  return localDogs.map(dog => ({
-    ...dog,
-    status: getDogStatus(dog.id)
-  }));
+  return localDogs.map(dog => {
+    const edits = getBaseDogEdits(dog.id);
+    return {
+      ...dog,
+      ...(edits || {}),
+      id: dog.id, // Ensure ID is never overwritten
+      status: getDogStatus(dog.id)
+    };
+  });
 };
 
 // Get available dogs only
@@ -183,7 +200,26 @@ export const updateDogStatusByName = (dogName, newStatus) => {
   }
   return false;
 };
+// Update base dog data (name, breed, age, color, gender, type, etc.)
+export const updateBaseDog = (dogId, updatedData) => {
+  // Check if this is a base dog
+  const baseDog = localDogs.find(d => d.id === dogId);
+  if (baseDog) {
+    // Store ALL edits (excluding only id which must stay fixed)
+    const { id, ...editableFields } = updatedData;
+    setBaseDogEdits(dogId, editableFields);
+    if (updatedData.status) {
+      setDogStatus(dogId, updatedData.status);
+    }
+    return true;
+  }
+  return false;
+};
 
+// Check if dog is a base dog
+export const isBaseDog = (dogId) => {
+  return localDogs.some(d => d.id === dogId);
+};
 // ========== CUSTOM DOG FUNCTIONS (Admin) ==========
 
 // Add new dog (stored in localStorage)
