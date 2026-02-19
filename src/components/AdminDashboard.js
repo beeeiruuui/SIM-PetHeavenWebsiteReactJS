@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../services/unified-auth';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { getAllCatsWithCustom, getAllDogsWithCustom, updatePetStatus, addPet as addPetToData, deleteCustomPet, incrementTotalAdoptions, getTotalAdoptions, resetTotalAdoptions } from '../services/pet-data';
+import { getAllCatsWithCustom, getAllDogsWithCustom, updatePetStatus, addPet as addPetToData, deleteCustomPet, updateCustomPet, isCustomPet, incrementTotalAdoptions, getTotalAdoptions, resetTotalAdoptions } from '../services/pet-data';
 
 const AdminDashboard = () => {
   const { isLoggedIn, user, isAdmin, logout, users } = useAuth();
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
   const [showPetModal, setShowPetModal] = useState(false);
   const [editingPet, setEditingPet] = useState(null);
   const [petForm, setPetForm] = useState({
-    name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: ''
+    name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: ''
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [petFilter, setPetFilter] = useState('all');
@@ -171,7 +171,7 @@ const AdminDashboard = () => {
       setImagePreview(pet.image || null);
     } else {
       setEditingPet(null);
-      setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '' });
+      setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: '' });
       setImagePreview(null);
     }
     setShowPetModal(true);
@@ -180,7 +180,7 @@ const AdminDashboard = () => {
   const handleClosePetModal = () => {
     setShowPetModal(false);
     setEditingPet(null);
-    setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '' });
+    setPetForm({ name: '', type: 'Dog', breed: '', age: '', gender: 'Male', status: 'Available', vaccinated: false, neutered: false, image: '', color: '' });
     setImagePreview(null);
   };
 
@@ -218,8 +218,14 @@ const AdminDashboard = () => {
   const handleSavePet = (e) => {
     e.preventDefault();
     if (editingPet) {
-      // Update existing pet status
-      updatePetStatus(editingPet.id, petForm.status);
+      // Check if this is a custom pet (fully editable) or base pet (status only)
+      if (isCustomPet(editingPet.id)) {
+        // Update all fields for custom pet
+        updateCustomPet(editingPet.id, petForm, editingPet.type);
+      } else {
+        // Base pet - can only update status
+        updatePetStatus(editingPet.id, petForm.status);
+      }
       loadPets(); // Refresh the list
     } else {
       // Add new pet via pet-data.js
@@ -1494,6 +1500,18 @@ const AdminDashboard = () => {
                       <option value="Female">Female</option>
                     </select>
                   </div>
+                  <div className="form-group">
+                    <label>Color</label>
+                    <input
+                      type="text"
+                      name="color"
+                      value={petForm.color}
+                      onChange={handlePetFormChange}
+                      placeholder="e.g., White, Black, Brown"
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
                   <div className="form-group">
                     <label>Status *</label>
                     <select name="status" value={petForm.status} onChange={handlePetFormChange} required>

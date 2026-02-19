@@ -189,6 +189,22 @@ export const deleteCustomCat = (catId) => {
   window.dispatchEvent(new CustomEvent('petDataChanged', { detail: { type: 'Cat' } }));
 };
 
+// Update custom cat data
+export const updateCustomCat = (catId, updatedData) => {
+  const customCats = JSON.parse(localStorage.getItem('petHeaven_customCats') || '[]');
+  const index = customCats.findIndex(c => c.id === catId);
+  if (index !== -1) {
+    customCats[index] = { ...customCats[index], ...updatedData, id: catId, type: 'Cat' };
+    localStorage.setItem('petHeaven_customCats', JSON.stringify(customCats));
+    if (updatedData.status) {
+      setCatStatus(catId, updatedData.status);
+    }
+    window.dispatchEvent(new CustomEvent('petDataChanged', { detail: { type: 'Cat' } }));
+    return true;
+  }
+  return false;
+};
+
 // ========== CAT STATS ==========
 
 export const getCatStats = () => {

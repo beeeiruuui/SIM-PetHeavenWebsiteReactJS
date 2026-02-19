@@ -13,6 +13,7 @@ import {
   getCustomCats, 
   getAllCatsWithCustom, 
   deleteCustomCat,
+  updateCustomCat,
   getCatStats,
   resetAllCatStatuses,
   localCats 
@@ -29,6 +30,7 @@ import {
   getCustomDogs, 
   getAllDogsWithCustom, 
   deleteCustomDog,
+  updateCustomDog,
   getDogStats,
   resetAllDogStatuses,
   localDogs 
@@ -197,6 +199,42 @@ export const deleteCustomPet = (petId) => {
   } else if (customDogs.find(d => d.id === petId)) {
     deleteCustomDog(petId);
   }
+};
+
+// Update custom pet (handles type change if needed)
+export const updateCustomPet = (petId, updatedData, originalType) => {
+  const customCats = getCustomCats();
+  const customDogs = getCustomDogs();
+  const isCustomCat = customCats.find(c => c.id === petId);
+  const isCustomDog = customDogs.find(d => d.id === petId);
+  
+  // Check if type is changing
+  const newType = updatedData.type;
+  
+  if (isCustomCat && newType === 'Dog') {
+    // Changing from Cat to Dog - delete from cats, add to dogs
+    deleteCustomCat(petId);
+    return addDog({ ...updatedData, id: undefined }); // Let addDog generate new ID
+  } else if (isCustomDog && newType === 'Cat') {
+    // Changing from Dog to Cat - delete from dogs, add to cats
+    deleteCustomDog(petId);
+    return addCat({ ...updatedData, id: undefined }); // Let addCat generate new ID
+  } else if (isCustomCat) {
+    // Update cat
+    return updateCustomCat(petId, updatedData);
+  } else if (isCustomDog) {
+    // Update dog
+    return updateCustomDog(petId, updatedData);
+  }
+  
+  return false; // Not a custom pet (base pet can't be fully edited)
+};
+
+// Check if a pet is a custom pet (editable)
+export const isCustomPet = (petId) => {
+  const customCats = getCustomCats();
+  const customDogs = getCustomDogs();
+  return customCats.some(c => c.id === petId) || customDogs.some(d => d.id === petId);
 };
 
 // Reset all pet statuses to Available

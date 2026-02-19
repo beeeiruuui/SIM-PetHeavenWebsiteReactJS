@@ -225,6 +225,22 @@ export const deleteCustomDog = (dogId) => {
   window.dispatchEvent(new CustomEvent('petDataChanged', { detail: { type: 'Dog' } }));
 };
 
+// Update custom dog data
+export const updateCustomDog = (dogId, updatedData) => {
+  const customDogs = JSON.parse(localStorage.getItem('petHeaven_customDogs') || '[]');
+  const index = customDogs.findIndex(d => d.id === dogId);
+  if (index !== -1) {
+    customDogs[index] = { ...customDogs[index], ...updatedData, id: dogId, type: 'Dog' };
+    localStorage.setItem('petHeaven_customDogs', JSON.stringify(customDogs));
+    if (updatedData.status) {
+      setDogStatus(dogId, updatedData.status);
+    }
+    window.dispatchEvent(new CustomEvent('petDataChanged', { detail: { type: 'Dog' } }));
+    return true;
+  }
+  return false;
+};
+
 // ========== DOG STATS ==========
 
 export const getDogStats = () => {
