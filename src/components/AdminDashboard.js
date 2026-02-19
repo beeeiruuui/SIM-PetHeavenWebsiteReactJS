@@ -4,7 +4,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { getAllCats, getAllDogs, updatePetStatus, addPet as addPetToData, deleteCustomPet, updatePet, incrementTotalAdoptions, getTotalAdoptions, resetTotalAdoptions } from '../services/pet-manager';
 
 const AdminDashboard = () => {
-  const { isLoggedIn, user, isAdmin, logout, users } = useAuth();
+  const { isLoggedIn, user, isAdmin, logout, users, deleteAccount } = useAuth();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('overview');
   const [lastActivity, setLastActivity] = useState(null);
@@ -512,6 +512,19 @@ const AdminDashboard = () => {
     setSelectedMember(null);
   };
 
+  const handleDeleteUser = (userToDelete) => {
+    // Prevent admin from deleting themselves
+    if (userToDelete.email === user.email) {
+      alert('You cannot delete your own account from here.');
+      return;
+    }
+    
+    if (window.confirm(`Are you sure you want to delete ${userToDelete.name} (${userToDelete.email})?`)) {
+      deleteAccount(userToDelete.email);
+      alert(`User ${userToDelete.name} has been deleted.`);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/auth');
@@ -924,7 +937,7 @@ const AdminDashboard = () => {
             className={`admin-nav-item ${activeSection === 'members' ? 'active' : ''}`}
             onClick={() => setActiveSection('members')}
           >
-            👥 Members
+            👥 Users
           </button>
           <button 
             className={`admin-nav-item ${activeSection === 'cats' ? 'active' : ''}`}
@@ -1245,7 +1258,41 @@ const AdminDashboard = () => {
 
         {activeSection === 'members' && (
           <div className="admin-section">
-            <h2>Registered Members</h2>
+            {/* Admins Section */}
+            <h2>👑 Registered Admins</h2>
+            <div className="admin-card full-width" style={{marginBottom: '30px'}}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users && users.filter(u => u.role === 'admin').map((admin, index) => (
+                    <tr key={admin.id || index}>
+                      <td>#{admin.id || index + 1}</td>
+                      <td>{admin.name}</td>
+                      <td>{admin.email}</td>
+                      <td>{admin.phone || 'N/A'}</td>
+                      <td>
+                        <button className="btn-small btn-view" onClick={() => handleViewMember(admin)}>View</button>
+                        <button className="btn-small btn-delete" onClick={() => handleDeleteUser(admin)} style={{marginLeft: '5px'}}>Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                  {users && users.filter(u => u.role === 'admin').length === 0 && (
+                    <tr><td colSpan="5" style={{textAlign: 'center', color: '#888'}}>No admins registered</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Members Section */}
+            <h2>👤 Registered Members</h2>
             <div className="admin-card full-width">
               <table className="admin-table">
                 <thead>
@@ -1254,27 +1301,25 @@ const AdminDashboard = () => {
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Role</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users && users.map((member, index) => (
+                  {users && users.filter(u => u.role === 'user').map((member, index) => (
                     <tr key={member.id || index}>
                       <td>#{member.id || index + 1}</td>
                       <td>{member.name}</td>
                       <td>{member.email}</td>
                       <td>{member.phone || 'N/A'}</td>
                       <td>
-                        <span className={`role-badge ${member.role}`}>
-                          {member.role}
-                        </span>
-                      </td>
-                      <td>
                         <button className="btn-small btn-view" onClick={() => handleViewMember(member)}>View</button>
+                        <button className="btn-small btn-delete" onClick={() => handleDeleteUser(member)} style={{marginLeft: '5px'}}>Delete</button>
                       </td>
                     </tr>
                   ))}
+                  {users && users.filter(u => u.role === 'user').length === 0 && (
+                    <tr><td colSpan="5" style={{textAlign: 'center', color: '#888'}}>No members registered</td></tr>
+                  )}
                 </tbody>
               </table>
             </div>

@@ -9,17 +9,35 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(() => {
+    // Load users from localStorage on init
+    const savedUsers = localStorage.getItem('petHeaven_users');
+    return savedUsers ? JSON.parse(savedUsers) : [];
+  });
 
-  // Load user from localStorage on mount
+  // Load current user from localStorage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('petHeaven_user');
     if (savedUser) {
       const parsed = JSON.parse(savedUser);
       setUser(parsed);
       setIsLoggedIn(true);
+      
+      // Ensure logged-in user is in users list
+      setUsers(prev => {
+        const exists = prev.find(u => u.email === parsed.email);
+        if (!exists && parsed.email) {
+          return [...prev, { ...parsed, password: 'password123' }]; // Add user with default password
+        }
+        return prev;
+      });
     }
   }, []);
+
+  // Save users to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('petHeaven_users', JSON.stringify(users));
+  }, [users]);
 
   const login = (email, password, role = 'user') => {
     const foundUser = users.find(
