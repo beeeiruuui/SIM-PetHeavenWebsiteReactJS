@@ -2778,6 +2778,7 @@ legend {
 
 .admin-card.full-width {
   grid-column: 1 / -1;
+  overflow-x: auto;
 }
 
 .admin-card h3 {
@@ -2804,6 +2805,7 @@ legend {
 
 .admin-table {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
 }
 
@@ -2812,7 +2814,7 @@ legend {
   padding: 0.6rem 0.5rem;
   text-align: left;
   border-bottom: 1px solid var(--light-pink);
-  word-wrap: break-word;
+  white-space: nowrap;
 }
 
 .admin-table th {
